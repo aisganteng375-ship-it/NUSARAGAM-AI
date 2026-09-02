@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NusaRagam AI — Pelestari Bahasa & Budaya Nusantara</title>
+  <meta name="description" content="Aplikasi Kecerdasan Buatan Pelestari 20 Bahasa Daerah, Aksara Tradisional, dan Warisan Budaya Nusantara untuk Kompetisi YCWC 2026.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       1. APP HEADER & BRANDING
+       ======================================================================== -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="brand-logo">🏛️</div>
+      <div>
+        <div class="brand-title">NUSA RAGAM AI</div>
+        <div class="brand-tagline" id="appTagline">Penerjemah 20 Bahasa, Voice STT, Aksara & Vision Lens Budaya</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary" onclick="setLanguage('id')">🇮🇩 ID</button>
+      <button class="btn-secondary" onclick="setLanguage('en')">🇬🇧 EN</button>
+      <button class="btn-icon" id="btnOpenSettings" title="Pengaturan AI / API Key">⚙️ Pengaturan</button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       2. NAVIGATION TABS (8 MODUL UTAMA)
+       ======================================================================== -->
+  <nav class="nav-tab-container">
+    <button class="nav-tab active" data-tab="translator" id="tabTxtTranslator">🗣️ Penerjemah 20 Bahasa</button>
+    <button class="nav-tab" data-tab="daily" id="tabTxtDaily">🧭 Panduan Situasi Harian</button>
+    <button class="nav-tab" data-tab="aksara" id="tabTxtAksara">📜 Aksara Nusantara</button>
+    <button class="nav-tab" data-tab="vision" id="tabTxtVision">📷 Vision Lens AI</button>
+    <button class="nav-tab" data-tab="chat" id="tabTxtChat">💬 Tanya Mpu Nusantara</button>
+    <button class="nav-tab" data-tab="map" id="tabTxtMap">🗺️ Peta Interaktif</button>
+    <button class="nav-tab" data-tab="quiz" id="tabTxtQuiz">🎮 Kuis Budaya & Skor</button>
+    <button class="nav-tab" data-tab="inspector" id="tabTxtInspector">🔍 AI Inspector & RAG</button>
+  </nav>
+
+  <!-- ========================================================================
+       3. MAIN CONTENT WORKSPACE
+       ======================================================================== -->
+  <main class="main-container">
+
+    <!-- TAB 1: PENERJEMAH 20 BAHASA -->
+    <section class="tab-pane active" id="tab-translator">
+      <div class="politeness-bar">
+        <span class="politeness-label">Tingkat Kesopanan:</span>
+        <button class="btn-secondary active" id="btnFormal">👑 Sopan (Halus/Krama)</button>
+        <button class="btn-secondary" id="btnInformal">☕ Santai (Akrab/Ngoko)</button>
+      </div>
+
+      <div class="translator-grid">
+        <!-- Input Panel -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <label for="srcLangSelect">DARI:</label>
+            <select id="srcLangSelect" class="lang-select"></select>
+          </div>
+          <textarea id="translateInput" class="translator-textarea" placeholder="Ketik kata, satu kalimat, atau paragraf panjang di sini (misal: Selamat pagi, saya ingin membeli makanan di pasar dengan harga murah)..."></textarea>
+          <div class="panel-footer">
+            <span id="charCount">0 karakter</span>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-icon" id="btnVoiceInput" onclick="toggleVoiceInput()">🎙️ <span>Bicara</span></button>
+              <button class="btn-icon" onclick="document.getElementById('translateInput').value=''; executeTranslation();">🧹 Bersihkan</button>
+              <button class="btn-primary" onclick="executeTranslation()">✨ Terjemahkan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <label for="tgtLangSelect">KE BAHASA:</label>
+              <select id="tgtLangSelect" class="lang-select"></select>
+            </div>
+            <button class="btn-icon" onclick="swapLanguages()" title="Tukar Bahasa">🔄 Tukar</button>
+          </div>
+          
+          <div id="translateOutput" class="translator-output-box">Hasil terjemahan kontekstual akan muncul di sini...</div>
+          
+          <div id="scriptDisplayBox" class="script-display-box" style="display:none;"></div>
+          <div id="phoneticGuide" class="phonetic-guide" style="display:none;"></div>
+          <div id="culturalEtiquetteNote" class="etiquette-note" style="display:none;"></div>
+          <div id="validationNoticeBox" class="validation-notice-box" style="display:none;"></div>
+
+          <div class="trust-badge-row">
+            <div id="trustIndicatorBadge" class="badge-trust badge-db-verified">
+              🟢 <span>Database Verified (100%)</span>
+            </div>
+            <div class="confidence-meter-container" id="confidenceMeter" style="display:none;">
+              <span>Skor Keyakinan:</span>
+              <div class="confidence-bar-bg">
+                <div class="confidence-bar-fill" id="confidenceFill"></div>
+              </div>
+              <strong id="confidenceScore">100%</strong>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-icon" onclick="playAudioTranslation()" title="Dengarkan Pelafalan">🔊 Audio</button>
+              <button class="btn-icon" onclick="copyTranslationResult()" title="Salin Hasil">📋 Salin</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Language Dossier Card -->
+      <div class="lang-info-grid" id="langInfoCard">
+        <div class="lang-info-item">
+          <strong>Jumlah Penutur:</strong>
+          <span id="langInfoSpeakers">± 84.3 Juta Penutur</span>
+        </div>
+        <div class="lang-info-item">
+          <strong>Wilayah Sebaran:</strong>
+          <span id="langInfoRegion">Jawa Tengah, D.I.Y, Jawa Timur</span>
+        </div>
+        <div class="lang-info-item">
+          <strong>Rumpun Bahasa:</strong>
+          <span id="langInfoFamily">Austronesia (Melayu-Polinesia)</span>
+        </div>
+        <div class="lang-info-item">
+          <strong>Keunikan Budaya:</strong>
+          <span id="langInfoFact">Memiliki 3 tingkatan tata krama lisan yang sangat terstruktur.</span>
+        </div>
+      </div>
+
+      <!-- CoT Reasoning Flow -->
+      <div class="cot-container">
+        <div class="cot-header" onclick="const s = document.getElementById('cotSteps'); s.style.display = s.style.display === 'none' ? 'grid' : 'none';">
+          <span>🧠 Alur Berpikir AI (Agentic Cultural Reasoning Steps)</span>
+          <span>▼</span>
+        </div>
+        <div class="cot-steps" id="cotSteps">
+          <div class="cot-step-item">
+            <strong>1. Deteksi Semantik & Frasa:</strong>
+            <span id="cotStep1">Menilai struktur kalimat sumber dan mendeteksi kosakata leksikon.</span>
+          </div>
+          <div class="cot-step-item">
+            <strong>2. Kalibrasi Tingkat Tutur (Etika):</strong>
+            <span id="cotStep2">Menerapkan strata kesopanan yang dipilih (Halus/Krama vs Santai/Ngoko).</span>
+          </div>
+          <div class="cot-step-item">
+            <strong>3. Validasi Linguistik & Keamanan:</strong>
+            <span id="cotStep3">Memverifikasi 3 lapis tata bahasa dan memberikan skor kepercayaan.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: PANDUAN SITUASI HARIAN -->
+    <section class="tab-pane" id="tab-daily">
+      <div style="margin-bottom:16px;">
+        <h2 id="dailySituationTitle" style="color:var(--gold-primary); margin-bottom:4px;">Tawar-Menawar di Pasar Tradisional</h2>
+        <p id="dailySituationDesc" style="color:var(--text-muted);">Frasa menawar harga, menanyakan kesegaran bahan pangan, dan menyepakati transaksi secara santun.</p>
+      </div>
+
+      <div class="daily-nav-tabs" id="dailySituationsTabs"></div>
+      <div class="daily-dialog-container" id="dailyDialogContainer"></div>
+
+      <!-- Daily Wisdom Box -->
+      <div class="wisdom-card">
+        <div class="wisdom-quote" id="wisdomQuote">"Urip Iku Urup"</div>
+        <div class="wisdom-lang" id="wisdomLang">Asal: Jawa</div>
+        <div class="wisdom-meaning" id="wisdomMeaning">Arti: Hidup itu hendaknya memberi manfaat dan menerangi sesama di sekitar kita.</div>
+        <div class="wisdom-philosophy" id="wisdomPhilosophy">Filosofi luhur tentang makna pengabdian diri dan kebajikan sosial.</div>
+        <div class="wisdom-actions">
+          <button class="btn-secondary" onclick="rotateDailyWisdom()">🔄 Ganti Petuah Hari Ini</button>
+          <button class="btn-primary" onclick="shareWisdomToWhatsApp()">📲 Bagikan ke WhatsApp</button>
+          <button class="btn-icon" onclick="downloadWisdomCard()">⬇️ Unduh Kartu (PNG)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: AKSARA NUSANTARA -->
+    <section class="tab-pane" id="tab-aksara">
+      <div class="panel-card" style="max-width:800px; margin:0 auto;">
+        <div class="panel-header">
+          <label for="aksaraTypeSelect">PILIH AKSARA TRADISIONAL:</label>
+          <select id="aksaraTypeSelect" class="lang-select" onchange="executeAksaraConversion()">
+            <option value="jawa">Aksara Jawa (Hanacaraka)</option>
+            <option value="sunda">Aksara Sunda (Kaganga)</option>
+            <option value="bali">Aksara Bali</option>
+            <option value="bugis">Aksara Bugis (Lontara)</option>
+            <option value="batak">Surat Batak (Toba)</option>
+            <option value="lampung">Aksara Lampung (Had Lampung)</option>
+          </select>
+        </div>
+        <textarea id="aksaraInput" class="translator-textarea" placeholder="Ketik teks alfabet Latin di sini (misal: hanacaraka, rahayu, mejuah-juah)..." oninput="executeAksaraConversion()"></textarea>
+        <div class="script-display-box" id="aksaraOutputDisplay" style="min-height:100px; display:flex; align-items:center; justify-content:center;">
+          Hasil aksara akan muncul di sini...
+        </div>
+        <div class="panel-footer" style="justify-content:flex-end;">
+          <button class="btn-primary" onclick="executeAksaraConversion()">Transliterasi ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: VISION LENS AI -->
+    <section class="tab-pane" id="tab-vision">
+      <div class="vision-grid">
+        <div class="panel-card">
+          <h3 style="color:var(--gold-primary); margin-bottom:8px;">📷 Pindai & Identifikasi Citra Budaya</h3>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:14px;">Unggah foto kain batik, keris pusaka, atau rumah adat untuk dianalisis oleh Model Multimodal Vision AI.</p>
+          
+          <label class="upload-dropzone">
+            <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+            <div style="font-size:2.5rem; margin-bottom:10px;">📸</div>
+            <strong>Klik untuk Unggah Foto Artefak</strong>
+            <p style="color:var(--text-dim); font-size:0.8rem; margin-top:4px;">Mendukung format JPG, PNG, WEBP</p>
+          </label>
+
+          <div style="margin-top:20px;">
+            <label style="font-size:0.85rem; font-weight:700; color:var(--gold-secondary);">Atau Pilih Sampel Warisan Cepat:</label>
+            <div class="vision-samples-grid">
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('batik_megamendung')">Batik Megamendung</button>
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('batik_parang')">Batik Parang Rusak</button>
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('keris_luk')">Keris Pusaka Luk</button>
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('rumah_gadang')">Rumah Gadang</button>
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('honai_papua')">Rumah Honai</button>
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('songket_palembang')">Songket Palembang</button>
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('rendang_padang')">Rendang Padang</button>
+              <button class="vision-sample-btn" onclick="analyzeVisionSample('batik_kawung')">Batik Kawung</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card" id="visionResultCard" style="display:none;">
+          <h3 id="visionArtifactTitle" style="color:var(--gold-primary); margin-bottom:4px;">Motif Batik Megamendung</h3>
+          <div style="display:flex; gap:10px; margin-bottom:12px;">
+            <span id="visionArtifactOrigin" class="badge-trust badge-db-verified">Cirebon, Jawa Barat</span>
+            <span id="visionArtifactCategory" class="badge-trust badge-ai-validated">Kain Tradisional</span>
+          </div>
+          <div class="fact-list">
+            <div class="fact-item"><span class="fact-label">• Ciri Khas Visual:</span> <span class="fact-val" id="visionArtifactHallmarks">...</span></div>
+            <div class="fact-item"><span class="fact-label">• Makna Filosofis:</span> <span class="fact-val" id="visionArtifactPhilosophy">...</span></div>
+            <div class="fact-item"><span class="fact-label">• Penggunaan Adat:</span> <span class="fact-val" id="visionArtifactUsage">...</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: TANYA MPU NUSANTARA -->
+    <section class="tab-pane" id="tab-chat">
+      <div class="chat-window">
+        <div class="chat-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="msg-avatar">🧓</div>
+            <div>
+              <strong style="color:var(--gold-primary);">Mpu Nusantara</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Penjaga Pengetahuan Sejarah & Budaya Nusantara (Fact-First Engine)</div>
+            </div>
+          </div>
+          <button class="btn-icon" onclick="clearChatHistory()">🗑️ Hapus Chat</button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <div class="msg-row bot">
+            <div class="msg-avatar">🧓</div>
+            <div class="msg-bubble">
+              <strong>Salam Rahayu dan Kebajikan Nusantara!</strong><br><br>
+              Saya <strong>Mpu Nusantara</strong> siap menyajikan fakta sejarah dan kebudayaan yang spesifik dan terverifikasi.<br>
+              Silakan tanyakan tokoh pahlawan (contoh: <em>Pangeran Diponegoro, Gajah Mada, Sultan Hasanuddin, Cut Nyak Dien</em>), kerajaan (contoh: <em>Majapahit, Sriwijaya, Mataram Islam</em>), atau kearifan adat 20 suku bangsa.
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-bar">
+          <input type="text" id="chatInput" placeholder="Tanyakan tokoh pahlawan (Diponegoro, Gajah Mada), kerajaan (Majapahit), atau filosofi adat..." onkeypress="handleChatEnter(event)">
+          <button class="btn-primary" onclick="sendChatMessage()">Kirim 🚀</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: PETA INTERAKTIF NUSANTARA -->
+    <section class="tab-pane" id="tab-map">
+      <div class="panel-card">
+        <h2 style="color:var(--gold-primary); margin-bottom:6px;">🗺️ Peta Warisan Budaya Nusantara</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Klik kepulauan Indonesia di bawah ini untuk melihat profil bahasa, tarian, senjata pusaka, dan etika adat.</p>
+        
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+          <button class="btn-secondary map-island-btn active" data-region="sumatera">🌴 Sumatera</button>
+          <button class="btn-secondary map-island-btn" data-region="jawa">🌾 Jawa & Madura</button>
+          <button class="btn-secondary map-island-btn" data-region="nusa">🏖️ Bali & Nusa Tenggara</button>
+          <button class="btn-secondary map-island-btn" data-region="kalimantan">🌳 Kalimantan (Borneo)</button>
+          <button class="btn-secondary map-island-btn" data-region="sulawesi">⛵ Sulawesi</button>
+          <button class="btn-secondary map-island-btn" data-region="maluku">🌺 Kepulauan Maluku</button>
+          <button class="btn-secondary map-island-btn" data-region="papua">⛰️ Tanah Papua</button>
+        </div>
+
+        <div class="fact-sheet-card" id="mapDossierCard">
+          <div class="fact-sheet-title" id="dossierTitle">Kepulauan Sumatera</div>
+          <div class="fact-list">
+            <div class="fact-item"><span class="fact-label">• Bahasa Daerah:</span> <span class="fact-val" id="dossierLangs">Aceh, Batak Toba, Batak Karo, Minangkabau, Melayu, Lampung</span></div>
+            <div class="fact-item"><span class="fact-label">• Rumah Adat:</span> <span class="fact-val" id="dossierHouse">Rumah Gadang (Minang), Rumah Bolon (Batak), Rumoh Aceh</span></div>
+            <div class="fact-item"><span class="fact-label">• Tarian Tradisional:</span> <span class="fact-val" id="dossierDance">Tari Saman (Aceh), Tari Piring (Minang), Tari Tor-Tor (Batak)</span></div>
+            <div class="fact-item"><span class="fact-label">• Senjata Pusaka:</span> <span class="fact-val" id="dossierWeapon">Rencong (Aceh), Kerambit (Minang), Piso Surit (Batak)</span></div>
+            <div class="fact-item"><span class="fact-label">• Kuliner Khas:</span> <span class="fact-val" id="dossierFood">Rendang, Mie Aceh, Arsik Ikan Mas, Tempoyak, Pempek</span></div>
+            <div class="fact-item"><span class="fact-label">• Etika Bertutur:</span> <span class="fact-val" id="dossierEtiquette">Kekeluargaan sangat erat, selalu gunakan sapaan gelar kekerabatan saat bertamu.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: KUIS BUDAYA & SKOR -->
+    <section class="tab-pane" id="tab-quiz">
+      <div class="quiz-card" id="quizCardContainer"></div>
+    </section>
+
+    <!-- TAB 8: AI INSPECTOR & RAG ARCHITECTURE -->
+    <section class="tab-pane" id="tab-inspector">
+      <div class="panel-card">
+        <h2 style="color:var(--gold-primary); margin-bottom:10px;">🔍 AI Architecture & Hybrid LLM Pipeline</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Transparansi arsitektur sistem kepada dewan juri YCWC 2026: Hybrid Local Ground-Truth + Live Gemini 2.0 Flash + 3-Layer Validation.</p>
+        
+        <div class="cot-steps" style="grid-template-columns:1fr 1fr; margin-bottom:16px;">
+          <div class="cot-step-item">
+            <strong>Hybrid LLM Pipeline:</strong>
+            <p>1. Local Ground-Truth DB Lookup (0ms latency)</p>
+            <p>2. Live Gemini 2.0 Flash API (Context-grounded)</p>
+            <p>3. 3-Layer Linguistic Validation Guard</p>
+            <p>4. Dynamic LocalStorage Caching System</p>
+          </div>
+          <div class="cot-step-item">
+            <strong>Standar Keamanan & Anti-Halusinasi:</strong>
+            <p>• 4-Tier Trust Classification (🟢 🔵 ⚠️ ❌)</p>
+            <p>• Zero Hardcoded API Keys</p>
+            <p>• 100% Client-Side Standalone Execution</p>
+            <p>• Multi-tier Politeness Calibration</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       4. SETTINGS MODAL (BYOK AI GATEWAY)
+       ======================================================================== -->
+  <div class="modal-overlay" id="settingsModal" style="display:none;">
+    <div class="modal-content">
+      <h3 style="color:var(--gold-primary); margin-bottom:12px;">⚙️ Pengaturan Model AI</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Masukkan Google Gemini API Key Anda untuk mengaktifkan terjemahan live kalimat tak terbatas & kecerdasan penuh Mpu Nusantara.</p>
+      
+      <div style="margin-bottom:12px;">
+        <label style="font-size:0.85rem; font-weight:700; color:var(--gold-secondary); display:block; margin-bottom:4px;">Penyedia AI (AI Provider):</label>
+        <select id="settingAiProvider" class="lang-select" style="width:100%;">
+          <option value="gemini">Google Gemini 2.0 Flash (Direkomendasikan)</option>
+          <option value="offline">Mode Offline (Aturan Leksikon Lokal)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.85rem; font-weight:700; color:var(--gold-secondary); display:block; margin-bottom:4px;">Gemini API Key:</label>
+        <input type="password" id="settingApiKey" class="translator-textarea" style="height:44px; padding:10px;" placeholder="AIzaSy...">
+        <p style="font-size:0.75rem; color:var(--text-dim); margin-top:4px;">🔒 API Key disimpan secara lokal di browser Anda (localStorage) dan tidak pernah dikirim ke server pihak ketiga.</p>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn-primary" id="btnCloseSettings">Simpan & Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="appToast" class="app-toast"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    NusaRagam AI &copy; 2026 • Dirancang untuk Young Coders World Cup (YCWC) 2026 • Lestarikan Warisan 20 Bahasa Nusantara 🇮🇩
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
