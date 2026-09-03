@@ -104,6 +104,7 @@ body::before {
   font-weight: 800;
   letter-spacing: 0.5px;
   background: linear-gradient(135deg, #ffffff 30%, var(--gold-primary) 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -335,6 +336,33 @@ body::before {
   color: var(--text-muted);
 }
 
+.quick-examples-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.chip-example {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--gold-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.chip-example:hover {
+  background: var(--gold-primary);
+  color: #000;
+  border-color: var(--gold-primary);
+}
+
 /* Politeness Toggle Bar */
 .politeness-bar {
   display: flex;
@@ -367,6 +395,12 @@ body::before {
   font-weight: 700;
   padding: 4px 10px;
   border-radius: var(--radius-sm);
+}
+
+.badge-neutral {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .badge-db-verified {
@@ -794,10 +828,18 @@ body::before {
   gap: 20px;
 }
 
+.vision-guide-banner {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid var(--gold-dark);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
 .upload-dropzone {
   border: 2px dashed var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 30px;
+  padding: 24px;
   text-align: center;
   cursor: pointer;
   background: var(--bg-surface);
@@ -809,29 +851,107 @@ body::before {
   background: var(--bg-card);
 }
 
+.vision-category-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  scrollbar-width: thin;
+}
+
+.vision-cat-pill {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.vision-cat-pill:hover, .vision-cat-pill.active {
+  background: var(--gold-primary);
+  color: #000;
+  border-color: var(--gold-primary);
+}
+
 .vision-samples-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 14px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
 }
 
 .vision-sample-btn {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
-  padding: 10px;
+  padding: 8px 10px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  text-align: center;
+  text-align: left;
   transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .vision-sample-btn:hover {
   border-color: var(--gold-primary);
   color: var(--gold-primary);
+}
+
+.vision-sample-btn span.sample-category {
+  font-size: 0.7rem;
+  color: var(--gold-secondary);
+}
+
+.vision-preview-box {
+  width: 100%;
+  max-height: 200px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-subtle);
+}
+
+.vision-preview-box img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.vision-translation-section {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.vision-translation-box {
+  background: var(--bg-surface);
+  border-left: 3px solid var(--gold-primary);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 /* Quiz Card */
@@ -959,9 +1079,118 @@ body::before {
   margin-top: auto;
 }
 
+/* Aksara 20 Traditional Scripts Converter Styles */
+.aksara-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.aksara-filter-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 4px;
+}
+
+.aksara-20-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.aksara-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.aksara-card:hover {
+  border-color: var(--gold-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.aksara-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+}
+
+.aksara-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.aksara-lang-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--gold-primary);
+}
+
+.aksara-script-name {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.aksara-text-display {
+  font-size: 1.55rem;
+  line-height: 1.8;
+  color: #ffffff;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  min-height: 80px;
+  word-break: break-word;
+  white-space: pre-wrap;
+  font-family: "Noto Sans Javanese", "Noto Sans Sundanese", "Noto Sans Balinese", "Noto Sans Batak", "Noto Sans Buginese", "Noto Naskh Arabic", "Segoe UI Historic", sans-serif;
+}
+
+.aksara-text-display.rtl-script {
+  direction: rtl;
+  text-align: right;
+  font-family: "Noto Naskh Arabic", "Traditional Arabic", Tahoma, sans-serif;
+  font-size: 1.65rem;
+}
+
+.aksara-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.06);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.aksara-rule-badge {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold-secondary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
-  .translator-grid, .vision-grid, .daily-dialog-container {
+  .translator-grid, .vision-grid, .daily-dialog-container, .aksara-20-grid {
     grid-template-columns: 1fr;
   }
   .lang-info-grid {
@@ -973,4 +1202,8 @@ body::before {
   .vision-samples-grid {
     grid-template-columns: 1fr 1fr;
   }
+  #comparisonDetailsContainer {
+    grid-template-columns: 1fr !important;
+  }
 }
+
