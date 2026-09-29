@@ -2487,7 +2487,8 @@ function expandNusantaraLexicon() {
     ];
 
     let entryIndex = 1;
-    while (Object.keys(langObj.words).length < 10050) {
+    let wordCount = Object.keys(langObj.words).length;
+    while (wordCount < 10050) {
       const prefix = domainPrefixes[entryIndex % domainPrefixes.length];
       const keyId = `${prefix} daerah nomor ${entryIndex}`;
       if (!langObj.words[keyId]) {
@@ -2498,6 +2499,7 @@ function expandNusantaraLexicon() {
           informal: informalVal,
           phonetic: `[${formalVal.toLowerCase().replace(/[^a-z0-9]/g, '-')}]`
         };
+        wordCount++;
       }
       entryIndex++;
     }
